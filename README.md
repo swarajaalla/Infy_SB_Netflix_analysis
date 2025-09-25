@@ -76,6 +76,4 @@ Exported as cleaned_netflix.csv for further analysis
 
 - Version Control: GitHub
 
-Platform: Databricks
 
-Version Control: GitHub
