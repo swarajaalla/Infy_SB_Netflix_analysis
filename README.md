@@ -36,7 +36,3 @@ Platform used for collaborative data cleaning, analysis, and future scalability.
 * Removed duplicates.
 * Split `duration` into `duration_num` and `duration_type`.
 * Cleaned text and standardized data.
-
----
-
-Do you want me to also add a **short section for “Next Steps”** (like Insights & Visualization) at the end, or keep it exactly till cleaning?
