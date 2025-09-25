@@ -30,3 +30,7 @@ df_drop = df_drop.withColumn(
     to_date(col("date_added"), "MMMM d, yyyy")
 )
 
+# importing the file in the csv file
+
+df_drop.to_csv("netflix_titles_cleaned.csv")
+
