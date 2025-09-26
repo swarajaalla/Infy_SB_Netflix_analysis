@@ -65,3 +65,54 @@ df['country'] = df['country'].replace(rare_countries, 'Other')
 
 cleaned_file_path = "/Volumes/workspace/default/netflix/cleaned_netflix.csv"
 df.to_csv(cleaned_file_path, index=False)
+
+# ====================================================================================
+# Basic EDA (Exploratory Data Analysis)
+# ====================================================================================
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+# style for better visuals
+sns.set(style="whitegrid")
+
+# Movies vs TV Shows comparision
+df['type'].value_counts().plot(kind='bar', color=['#ff9999','#66b3ff'])
+plt.title("Distribution of Content Type (Movies vs TV Shows)")
+plt.xlabel("Type")
+plt.ylabel("Count")
+plt.show()
+
+# Trend of Netflix content released per year
+content_per_year = df['release_year'].value_counts().sort_index()
+content_per_year.plot(kind='line', marker='o')
+plt.title("Content Growth Over Time")
+plt.xlabel("Year")
+plt.ylabel("Number of Titles Released")
+plt.show()
+
+# Top 10 Countries with Most Content
+top_countries = df['country'].value_counts().head(10)
+top_countries.plot(kind='barh', color='skyblue')
+plt.title("Top 10 Countries Contributing Content")
+plt.xlabel("Number of Titles")
+plt.ylabel("Country")
+plt.show()
+
+# Distribution of Ratings (Kids, Teens, Adults, etc)
+df['rating_group'].value_counts().plot(kind='bar', color='lightgreen')
+plt.title("Distribution of Content by Rating Group")
+plt.xlabel("Rating Group")
+plt.ylabel("Count")
+plt.show()
+
+# First and Latest Show Release
+print("Earliest Release Year:", df['release_year'].min())
+print("Most Recent Release Year:", df['release_year'].max())
+
+# Top 10 Most Common Genres
+top_genres = df_exploded['genre'].value_counts().head(10)
+top_genres.plot(kind='bar', color='orange')
+plt.title("Top 10 Most Common Genres")
+plt.xlabel("Genre")
+plt.ylabel("Count")
+plt.show()
