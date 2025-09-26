@@ -68,6 +68,35 @@ display(df.head())
 
 # COMMAND ----------
 
+print("\nMissing values:\n", df.isnull().sum())
+
+
+
+# COMMAND ----------
+
+# Fill missing rating and duration with 0
+df['rating'] = df['rating'].fillna(0)
+df['duration'] = df['duration'].fillna(0)
+
+# Verify
+print("Nulls after handling:\n", df[['rating', 'duration']].isnull().sum())
+display(df[['title', 'rating', 'duration']].head(10))
+
+
+# COMMAND ----------
+
+print("\nMissing values per column:")
+print(df.isnull().sum())
+
+# COMMAND ----------
+
+print(df.shape[0])
+df_cleaned = df.drop_duplicates()
+print(df_cleaned.shape[0])
+print(f"\nRemoved {df.shape[0] - df_cleaned.shape[0]} duplicate rows.")
+
+# COMMAND ----------
+
 #  Save cleaned file
 output_path = "/Volumes/workspace/default/netflix/netflix_cleaned.csv"
 df.to_csv(output_path, index=False)
