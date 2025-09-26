@@ -1,77 +1,48 @@
 # Databricks notebook source
 "/Volumes/workspace/default/netflix/netflix_analysis.csv"
 
-# COMMAND ----------
-
 import pandas as pd
 df = pd.read_csv("/Volumes/workspace/default/netflix/netflix_analysis.csv")
 df.shape
 df.head()
+# ============================================================================
+#CLEANING THE DATASET 
+# ============================================================================
 
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Cleaning the dataset 
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC - ### Remove Duplicates
-
-# COMMAND ----------
-
+# 1. Remove Duplicates
 df.info()
 df = df.drop_duplicates()
 df = df.drop_duplicates(subset=['title','release_year'])
 
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC - ### Handle Missing Values
-
-# COMMAND ----------
-
+# 2. Handle Missing Values
 df.isnull().sum()
 
-# COMMAND ----------
-
+# Fill missing categorical values with "Unknown"
 for col in ['director', 'cast', 'country', 'rating']:
     df[col] = df[col].fillna("Unknown")
-
-# COMMAND ----------
-
-#fixing todatetime format 
+    
+# 3. fixing to datetime format 
 df['date_added'] = pd.to_datetime(df['date_added'], errors='coerce')
 
-# COMMAND ----------
-
-#binary column
+# Create a binary flag for missing 'date_added'
 df['date_missing'] = df['date_added'].isna().astype(int)
 
-# COMMAND ----------
-
+# 4. Normalize Multi-Value Columns
 # Breaks columns with multiple value into multiple rows.
 df_exploded = df.assign(genre=df['listed_in'].str.split(',')).explode('genre')
 df_exploded['genre'] = df_exploded['genre'].str.strip()
 
-# COMMAND ----------
-
-# Handling Outliers
+# 5. Handling Outliers
 df['duration'] = df['duration'].str.replace(' min', '').str.replace(' Season[s]?', '', regex=True)
 
-# COMMAND ----------
+# =================================================================================
+# NORMALIZE CATEGORICAL FEATURES 
+# =================================================================================
 
-# MAGIC %md
-# MAGIC ### **Normalize Categorical Features**
-
-# COMMAND ----------
-
-#no extra spaces
+# 6. no extra spaces
 df['type'] = df['type'].str.strip() 
 
-# COMMAND ----------
-
-# Rating based on Age Group
+# 7. Rating based on Age Group
 rating_map = {
     'G': 'Kids', 'TV-Y': 'Kids', 'TV-G': 'Kids',
     'PG': 'Family', 'TV-PG': 'Family', 'TV-Y7': 'Family', 'TV-Y7-FV': 'Family',
@@ -82,24 +53,15 @@ rating_map = {
 df['rating_group'] = df['rating'].map(rating_map).fillna('Unknown')
 df.display()
 
-# COMMAND ----------
-
-# standard naming
+# 8. standard naming
 df['country'] = df['country'].replace({'USA': 'United States'})
 
-
-# COMMAND ----------
-
-# Converts categories into binary
+# 9. Converts categories into binary
 pd.get_dummies(df['type'], prefix='type')
 
-# COMMAND ----------
-
-# Grouping Rare Categories to avoid noise
+# 10. Grouping Rare Categories to avoid noise
 rare_countries = df['country'].value_counts()[df['country'].value_counts()<20].index
 df['country'] = df['country'].replace(rare_countries, 'Other')
-
-# COMMAND ----------
 
 cleaned_file_path = "/Volumes/workspace/default/netflix/cleaned_netflix.csv"
 df.to_csv(cleaned_file_path, index=False)
