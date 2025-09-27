@@ -6,7 +6,7 @@ df = pd.read_csv("/Volumes/workspace/default/netflix/netflix_analysis.csv")
 df.shape
 df.head()
 # ============================================================================
-#CLEANING THE DATASET 
+# CLEANING THE DATASET 
 # ============================================================================
 
 # 1. Remove Duplicates
@@ -35,12 +35,20 @@ df_exploded['genre'] = df_exploded['genre'].str.strip()
 # 5. Handling Outliers
 df['duration'] = df['duration'].str.replace(' min', '').str.replace(' Season[s]?', '', regex=True)
 
+import pandas as pd
+df_cleaned = pd.read_csv("/Volumes/workspace/default/netflix/cleaned_netflix.csv")
+df_cleaned.head()
+
+cleaned_file_path = "/Volumes/workspace/default/netflix/cleaned_netflix.csv"
+df.to_csv(cleaned_file_path, index=False)
+
 # =================================================================================
 # NORMALIZE CATEGORICAL FEATURES 
 # =================================================================================
 
 # 6. no extra spaces
-df['type'] = df['type'].str.strip() 
+df_cleaned = df.copy()
+df_cleaned['type'] = df_cleaned['type'].str.strip() 
 
 # 7. Rating based on Age Group
 rating_map = {
@@ -50,21 +58,25 @@ rating_map = {
     'R': 'Adults', 'NC-17': 'Adults', 'TV-MA': 'Adults'
 }
 
-df['rating_group'] = df['rating'].map(rating_map).fillna('Unknown')
-df.display()
+df_cleaned['rating_group'] = df_cleaned['rating'].map(rating_map).fillna('Unknown')
+df_cleaned.display()
 
 # 8. standard naming
-df['country'] = df['country'].replace({'USA': 'United States'})
+df_cleaned['country'] = df_cleaned['country'].replace({'USA': 'United States'})
 
-# 9. Converts categories into binary
-pd.get_dummies(df['type'], prefix='type')
+# 9. Converts categories into binary (ONE-HOT ENCODING)
+pd.get_dummies(df_cleaned['type'], prefix='type')
 
-# 10. Grouping Rare Categories to avoid noise
-rare_countries = df['country'].value_counts()[df['country'].value_counts()<20].index
-df['country'] = df['country'].replace(rare_countries, 'Other')
+# 10. LABEL ENCODING
+from sklearn.preprocessing import LabelEncoder
 
-cleaned_file_path = "/Volumes/workspace/default/netflix/cleaned_netflix.csv"
-df.to_csv(cleaned_file_path, index=False)
+le = LabelEncoder()
+df['rating_group_encoded'] = le.fit_transform(df['rating_group'])
+df[['rating_group', 'rating_group_encoded']].head()
+
+# 11. Grouping Rare Categories to avoid noise
+rare_countries = df_cleaned['country'].value_counts()[df_cleaned['country'].value_counts()<20].index
+df_cleaned['country'] = df_cleaned['country'].replace(rare_countries, 'Other')
 
 # ====================================================================================
 # Basic EDA (Exploratory Data Analysis)
@@ -76,14 +88,14 @@ import seaborn as sns
 sns.set(style="whitegrid")
 
 # Movies vs TV Shows comparision
-df['type'].value_counts().plot(kind='bar', color=['#ff9999','#66b3ff'])
+df_cleaned['type'].value_counts().plot(kind='bar', color=['#ff9999','#66b3ff'])
 plt.title("Distribution of Content Type (Movies vs TV Shows)")
 plt.xlabel("Type")
 plt.ylabel("Count")
 plt.show()
 
 # Trend of Netflix content released per year
-content_per_year = df['release_year'].value_counts().sort_index()
+content_per_year = df_cleaned['release_year'].value_counts().sort_index()
 content_per_year.plot(kind='line', marker='o')
 plt.title("Content Growth Over Time")
 plt.xlabel("Year")
@@ -91,7 +103,7 @@ plt.ylabel("Number of Titles Released")
 plt.show()
 
 # Top 10 Countries with Most Content
-top_countries = df['country'].value_counts().head(10)
+top_countries = df_cleaned['country'].value_counts().head(10)
 top_countries.plot(kind='barh', color='skyblue')
 plt.title("Top 10 Countries Contributing Content")
 plt.xlabel("Number of Titles")
@@ -99,15 +111,15 @@ plt.ylabel("Country")
 plt.show()
 
 # Distribution of Ratings (Kids, Teens, Adults, etc)
-df['rating_group'].value_counts().plot(kind='bar', color='lightgreen')
+df_cleaned['rating_group'].value_counts().plot(kind='bar', color='lightgreen')
 plt.title("Distribution of Content by Rating Group")
 plt.xlabel("Rating Group")
 plt.ylabel("Count")
 plt.show()
 
 # First and Latest Show Release
-print("Earliest Release Year:", df['release_year'].min())
-print("Most Recent Release Year:", df['release_year'].max())
+print("Earliest Release Year:", df_cleaned['release_year'].min())
+print("Most Recent Release Year:", df_cleaned['release_year'].max())
 
 # Top 10 Most Common Genres
 top_genres = df_exploded['genre'].value_counts().head(10)
