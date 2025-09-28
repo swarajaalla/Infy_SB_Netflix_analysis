@@ -12,28 +12,48 @@ from pyspark.sql.functions import to_date, col
 
 df = spark.table("SpringBoard.netflix_titles")
 
+# showing the Schema format of the table 
+
 df.printSchema()
 
+# splittling the column data
+
 df = df.withColumn('duration', split('duration', " "))
+
+# creating new columns
 
 df = df.withColumn('duration_time' , col('duration')[0])
 df = df.withColumn('duration_unit' , col('duration')[1])
 
+# casting the DataType
+
 df = df.withColumn('duration_time' , col('duration_time').cast('int'))
 df = df.withColumn('release_year' , col('release_year').cast('int'))
 
+# correcting the Format
+
 df = df.withColumn('date_added', regexp_replace('date_added', ",", " "))
+
+# getting number of distincts data
 
 df_distinct = df.select("type").distinct()
 
+# filtering for better understanding 
+
 df_fil = df.filter(col('type') == 'Movie')
 
+# Dropping unwanted columns
+
 df = df.drop(col('duration'))
+
+# changing the sequece of columns
 
 df = df.select('show_id', "type", "duration_time",
                "duration_unit", "title", "director",
                "cast", "country", "date_added", "release_year",
                "rating","listed_in", "description")
+
+#Handelings nulls and then dropping them
 
 df = df.fillna({'country': 'UNKNOWN', 'director': 'NOT KNOWN'})
 
