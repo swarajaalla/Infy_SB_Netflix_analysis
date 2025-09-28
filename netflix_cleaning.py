@@ -5,32 +5,69 @@ from pyspark.sql import *
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql.window import *
+from pyspark.sql.functions import *
+from pyspark.sql.functions import to_date, col
 
 # Reading the DataSet
 
-df = spark.table("netflix_titles.csv")
+df = spark.table("SpringBoard.netflix_titles")
 
-# removing Duplicates
+df.printSchema()
 
-df_rd = df.DropDuplicates()
+df = df.withColumn('duration', split('duration', " "))
 
-# Handeling Nulls
+df = df.withColumn('duration_time' , col('duration')[0])
+df = df.withColumn('duration_unit' , col('duration')[1])
 
-df_hn = df_rd.dropna('any')
+df = df.withColumn('duration_time' , col('duration_time').cast('int'))
+df = df.withColumn('release_year' , col('release_year').cast('int'))
 
-# Some changing the view of tha data in the column eg country names was in single line and now it is in element of the list same goes with listed_in column
+df = df.withColumn('date_added', regexp_replace('date_added', ",", " "))
 
-df_drop.withColumn('country', split(col('country'), ","))\
-  .withColumn('listed_in', split(col('listed_in'), ",") ).display()
+df_distinct = df.select("type").distinct()
 
-# Changing the Date formate
+df_fil = df.filter(col('type') == 'Movie')
 
-df_drop = df_drop.withColumn(
-    "date_added",
-    to_date(col("date_added"), "MMMM d, yyyy")
+df = df.drop(col('duration'))
+
+df = df.select('show_id', "type", "duration_time",
+               "duration_unit", "title", "director",
+               "cast", "country", "date_added", "release_year",
+               "rating","listed_in", "description")
+
+df = df.fillna({'country': 'UNKNOWN', 'director': 'NOT KNOWN'})
+
+df = df.withColumn('country', regexp_replace('country', ",", ""))
+
+df = df.dropna()
+
+df = df.withColumnRenamed('listed_in', 'genre')
+df = df.withColumn(
+    'genre',
+    split(col('genre'), ",")
 )
 
-# importing the file in the csv file
+display(df)
 
-df_drop.to_csv("netflix_titles_cleaned.csv")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
