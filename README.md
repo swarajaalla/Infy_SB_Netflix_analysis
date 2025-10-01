@@ -1,6 +1,5 @@
 # Netflix Dataset Analysis
 
-## Author
 **Name:** Gagan Dhanapune  
 **Email:** gagandhanapune@gmail.com  
 
