@@ -7,17 +7,32 @@ df.info()
 df.isnull().sum()
 df.duplicated().sum()
 df.describe(include='all')
+display(df.head())
 
-# Fill missing values
-df['director'].fillna("Unknown", inplace=True)
-df['cast'].fillna("Not Available", inplace=True)
-df['country'].fillna("Unknown", inplace=True)
-df['date_added'].fillna("Not Available", inplace=True)
-df['rating'].fillna("Not Rated", inplace=True)
-df['duration'].fillna("Unknown", inplace=True)
+Handle missing values
+df['director'] = df['director'].fillna("Unknown")
+df['cast'] = df['cast'].fillna("Not Available")
+df['country'] = df['country'].fillna("Unknown")
+df['date_added'] = pd.to_datetime(df['date_added'], errors='coerce')
+df['rating'] = df['rating'].fillna("Unknown")
+df['duration'] = df['duration'].fillna("Unknown")
+display(df.head())
 
-print("\nMissing values after handling:")
-print(df)
+Standardize text
+df['title'] = df['title'].str.strip()
+df['type'] = df['type'].str.title()
+df['country'] = df['country'].str.strip()
+print(df.shape)
+display(df.head())
 
-df=df.drop_duplicates()
+Drop rows with missing description
+df = df[df['description'].notna()]
 display(df)
+
+Reset index
+df = df.reset_index(drop=True)
+display(df)
+
+cleaned_file_path = "/Volumes/workspace/default/netflix/netflix_cleaned.csv"
+df.to_csv(cleaned_file_path, index=False)
+display(df.head())
