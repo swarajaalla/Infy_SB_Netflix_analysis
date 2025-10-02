@@ -67,16 +67,29 @@ df_cleaned['country'] = df_cleaned['country'].replace({'USA': 'United States'})
 # 9. Converts categories into binary (ONE-HOT ENCODING)
 pd.get_dummies(df_cleaned['type'], prefix='type')
 
-# 10. LABEL ENCODING
-from sklearn.preprocessing import LabelEncoder
+# 10. FREQUENCY ENCODING
+# frequency encoding on the director column
+director_freq = df_cleaned['director'].value_counts()
+df_cleaned['director_encoded'] = df_cleaned['director'].map(director_freq)
+print(df_cleaned[['director', 'director_encoded']].head(10))
 
-le = LabelEncoder()
-df['rating_group_encoded'] = le.fit_transform(df['rating_group'])
-df[['rating_group', 'rating_group_encoded']].head()
+# 11. ORDINAL ENCODING
+# ordinal Encoding
+from sklearn.preprocessing import OrdinalEncoder
+rating_order = [['Kids', 'Family', 'Teens', 'Adults', 'Unknown']]
+oe = OrdinalEncoder(categories=rating_order)
+df_cleaned['rating_group_encoded'] = oe.fit_transform(df_cleaned[['rating_group']])
+print(df_cleaned[['rating_group', 'rating_group_encoded']].head(10))
 
-# 11. Grouping Rare Categories to avoid noise
+# 12. Grouping Rare Categories to avoid noise
 rare_countries = df_cleaned['country'].value_counts()[df_cleaned['country'].value_counts()<20].index
 df_cleaned['country'] = df_cleaned['country'].replace(rare_countries, 'Other')
+
+normalized_file_path = "/Volumes/workspace/default/netflix/normalized_netflix.csv"
+df_normalized = df_cleaned.copy()
+
+df_normalized.to_csv(normalized_file_path, index=False)
+print(f"Normalized dataset saved at: {normalized_file_path}")
 
 # ====================================================================================
 # Basic EDA (Exploratory Data Analysis)
