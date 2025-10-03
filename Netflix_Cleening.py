@@ -101,4 +101,4 @@ print(df.isnull().sum())
 
 # Save normalized dataset 
 df.to_csv("/Volumes/workspace/default/netflix_dataset/netflix_cleaned_normalized.csv", index=False)
-print("✅ Normalized dataset saved as 'netflix_cleaned_normalized.csv'")
+print("Normalized dataset saved as 'netflix_cleaned_normalized.csv'")
