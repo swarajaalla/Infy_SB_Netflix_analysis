@@ -3,23 +3,16 @@ import pandas as pd
 df_cleaned = pd.read_csv("/Volumes/workspace/default/netflix/cleaned_netflix.csv")
 df_cleaned.head()
 
-# COMMAND ----------
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 # style for better visuals
 sns.set(style="whitegrid")
 
-# COMMAND ----------
-
 # genre count
 genre_counts = df_cleaned['listed_in'].str.split(', ', expand=True).stack().value_counts()
 display(genre_counts)
 
-# COMMAND ----------
-
-# DBTITLE 1,Top 10 Most Common Genres
-# Top 10 Countries with Most Content
+# Top 10 Most Common Genres
 top_genres = genre_counts.head(10)
 plt.title("Top 10 Most Common Genres")
 top_genres.plot(kind='bar', color='pink')
@@ -27,13 +20,9 @@ plt.xlabel("Genre")
 plt.ylabel("Count")
 plt.show()
 
-# COMMAND ----------
-
 # content type
 content_type_counts = df_cleaned['type'].value_counts()
 display(content_type_counts)
-
-# COMMAND ----------
 
 # Movies vs TV Shows comparision
 df_cleaned['type'].value_counts().plot(kind='pie')
@@ -42,13 +31,9 @@ plt.xlabel("Type")
 plt.ylabel("Count")
 plt.show()
 
-# COMMAND ----------
-
 # Country counts
 country_counts = df_cleaned['country'].str.split(', ', expand=True).stack().value_counts()
 display(country_counts)
-
-# COMMAND ----------
 
 # Top 10 Countries with Most Content
 top_countries = df_cleaned['country'].value_counts().head(10)
@@ -58,9 +43,6 @@ plt.xlabel("Number of Titles")
 plt.ylabel("Country")
 plt.show()
 
-
-# COMMAND ----------
-
 # Trend of Netflix content released per year
 content_per_year = df_cleaned['release_year'].value_counts().sort_index()
 content_per_year.plot(kind='line', marker='o')
@@ -68,8 +50,6 @@ plt.title("Content Growth Over Time")
 plt.xlabel("Year")
 plt.ylabel("Number of Titles Released")
 plt.show()
-
-# COMMAND ----------
 
 # Duration Analysis (Movies)
 movie_df = df_cleaned[df_cleaned['type'] == 'Movie']
@@ -82,7 +62,6 @@ plt.xlabel("Duration (minutes)")
 plt.ylabel("Frequency")
 plt.show()
 
-# COMMAND ----------
 
 # Filter dataset for recent years (2010 and above), Group by year and type
 recent_data = df_cleaned[df_cleaned['release_year'] >= 2010]
@@ -95,8 +74,6 @@ plt.ylabel("Number of Titles")
 plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
-
-# COMMAND ----------
 
 # Ratings Distribution
 plt.figure(figsize=(10,5))
