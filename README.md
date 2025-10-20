@@ -1,3 +1,4 @@
+
 # Netflix Dataset Analysis
 
 **Name:** Gagan Dhanapune  
@@ -9,13 +10,14 @@
 
 This project focuses on analyzing the Netflix content dataset available on Kaggle. The dataset contains information about movies and TV shows available on Netflix, including details such as title, director, cast, country, release year, rating, duration, and genre.  
 
-The analysis is divided into three main phases:  
+The analysis is divided into four main phases:  
 
 - **Phase 1:** Data Cleaning  
 - **Phase 2:** Data Normalization  
 - **Phase 3:** Exploratory Data Analysis (EDA)
+- **Phase 4:** Feature Engineering
 
-These phases lay the foundation for feature engineering and predictive modeling in later milestones.
+These phases prepare the dataset for in-depth analysis, visualization, and potential machine learning applications.
 
 ---
 
@@ -26,7 +28,7 @@ These phases lay the foundation for feature engineering and predictive modeling 
    - Imported the raw Netflix dataset using Pandas.
    
 2. **Handling Missing Values**  
-   - Filled missing values for `director`, `cast`, `country`, `date_added`, and `rating` with placeholders like `'NA'`.
+   - Filled missing values for `director`, `cast`, `country`, `date_added`, and `rating` with the placeholder `'NA'`.
    
 3. **Removing Duplicates**  
    - Ensured each row is unique based on all columns to maintain data integrity.
@@ -101,29 +103,61 @@ This phase focused on uncovering patterns, trends, and key characteristics of th
 
 ---
 
-## Potential Future Analysis & Metrics
+## Phase 4: Feature Engineering
 
-After completing the EDA, the dataset is fully prepared for more advanced analysis:
+This phase involved creating new, meaningful features from the existing cleaned data to make analysis more powerful and insightful.
 
-1. **Deeper Content Analysis**  
-   - Investigate popular genre combinations (e.g., which genres are most frequently paired together).
-   - Analyze the relationship between ratings and content duration (e.g., do R-rated movies tend to be longer?).
+### Steps Performed & Insights
 
-2. **Time-Series Insights**  
-   - Explore the seasonal trends in adding new content.
-   - Analyze the average age of content in the library over time.
+**1. Creating Content Length Category**
+- **Process:** A custom function was created to categorize each title's duration into meaningful groups. The logic was applied differently for movies (based on minutes) and TV shows (based on seasons).
+  - **Movies:** Short (≤ 60 min), Medium (61–120 min), Long (> 120 min).
+  - **TV Shows:** Limited (1 Season), Moderate (2–3 Seasons), Long-running (≥ 4 Seasons).
+- **Output:** A new column, `Content_Length_Category`, was created.
+- **Insights:**
+  - Most movies on Netflix fall into the **Medium** length category.
+  - The majority of TV shows are categorized as **Limited** or **Moderate**, suggesting a focus on shorter-format series.
 
-3. **Audience & Rating Insights**  
-   - Compare rating distributions across different top-contributing countries.  
-   - Identify which genres are most common for each rating category.
+**2. Identifying Netflix Originals**
+- **Process:** A new binary feature, `is_original`, was created to distinguish between Netflix Originals and licensed content. This was done by checking if the word "Netflix" appeared in the title.
+- **Output:** A new column, `is_original`, with values 'Original' or 'Licensed'.
+- **Insights:**
+  - The analysis reveals that the vast majority of titles in the dataset are **licensed content**, not Netflix Originals. This indicates a strong reliance on acquiring popular shows and movies to build its library.
 
-4. **Machine Learning Potential**  
-   - **Clustering** of content based on genre, duration, and ratings to identify "content clusters."
-   - **Classification** models to predict the content type (Movie vs. TV Show) based on other features.  
-   - Feature importance analysis to determine which attributes are most influential.
+**3. Mapping Countries to Regions**
+- **Process:** Each title's `country` was mapped to a broader geographical region (e.g., North America, Asia, Europe). A custom function was applied to handle multiple countries and assign them to the most relevant region.
+- **Output:** A new column, `Region`, was created.
+- **Insights:**
+  - **North America** (primarily the U.S.) is the dominant content provider.
+  - **Asia** follows as a significant contributor, with **India** and **South Korea** leading the way, which aligns with Netflix's global content strategy.
+
+**4. Creating Content Age Groups**
+- **Process:** The various rating labels (e.g., TV-MA, PG-13, R) were simplified into four distinct audience groups: **Kids**, **Teens**, **Adults**, and **Unknown**.
+- **Output:** A new column, `Content_Age_Group`, was created to simplify audience segmentation.
+- **Insights:**
+  - The content library is heavily skewed towards **Teens and Adults**, which together account for nearly 90% of the content.
+  - This shows a clear focus on mature storytelling and content for older audiences over children's programming.
+
+### Visualizations Created in Phase 4
+- **Bar Chart:** Distribution of Content Length Categories.
+- **Bar Chart:** Comparison of Original vs. Licensed Titles.
+- **Line Chart:** Yearly Growth of Netflix Content (Movies vs. TV Shows).
+- **Pie & Bar Charts:** Distribution of Audience Categories (Content\_Age\_Group).
+- **Bar Chart:** Number of Titles by Region.
+- **Stacked Bar Chart:** Distribution of Audience Categories within each Region.
+
+---
+
+## Key Insights - Final Summary
+
+- **Licensed vs. Original Content:** Most titles on Netflix are licensed, indicating a strategy of streaming popular shows and movies produced by other companies.
+- **Content Length:** Most movies are of **Medium length** (61-120 mins), while most TV shows are **Limited or Moderate series** (1-3 seasons).
+- **Audience Target:** The majority of Netflix's content is aimed at **Teens and Adults**, with a smaller portion dedicated to Kids.
+- **Regional Contribution:** The primary source of content is **North America**, with **Asia** (led by India and South Korea) being a strong secondary contributor.
+- **Content Growth:** The volume of content added to Netflix each year has been increasing, especially in recent years, which points to the platform's rapid global expansion.
 
 ---
 
 ## Conclusion
 
-By completing **Phases 1, 2, and 3**, we now have a **cleaned, normalized, and thoroughly explored Netflix dataset**. The EDA has revealed clear trends in content type, genre popularity, rating distribution, and geographical contributions. These insights form a strong foundation for building interactive dashboards, generating business recommendations, and developing advanced machine learning models in subsequent project milestones.
+By completing **Phases 1 through 4**, we now have a **cleaned, normalized, and feature-rich Netflix dataset**. The EDA and feature engineering have revealed clear trends in content type, genre popularity, rating distribution, and geographical contributions. These insights provide a strong foundation for building interactive dashboards, generating business recommendations, and developing advanced machine learning models in subsequent project milestones.
