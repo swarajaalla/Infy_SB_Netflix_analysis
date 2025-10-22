@@ -299,3 +299,91 @@ if 'country' in df.columns:
         df[f'country_{country.replace(" ", "_")}'] = country_list.apply(lambda x: int(country in x))
     df['country_other'] = country_list.apply(lambda x: int(not any(c in top_countries for c in x)))
 print(df[['country'] + [f'country_{c.replace(" ", "_")}' for c in top_countries] + ['country_other']].head())
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Handle missing values
+df['country'] = df['country'].fillna('Unknown')
+
+# Split multiple countries (since some entries have "United States, India")
+df['country_split'] = df['country'].apply(lambda x: x.split(',')[0].strip())
+
+# Count movies by country
+country_count = df['country_split'].value_counts().head(10)
+
+# Plot top 10 contributing countries
+plt.figure(figsize=(10,6))
+sns.barplot(x=country_count.values, y=country_count.index, palette='viridis')
+plt.title('Top 10 Countries by Netflix Content Contribution')
+plt.xlabel('Number of Titles')
+plt.ylabel('Country')
+plt.show()
+
+# COMMAND ----------
+#Content Length Category
+# Separate 'duration' into two groups: Movies (minutes) and TV Shows (seasons)
+def categorize_content_length(row):
+    if pd.isnull(row['duration']):
+        return 'Unknown'
+
+    if 'min' in row['duration']:
+        # Extract the number before 'min'
+        minutes = int(row['duration'].split()[0])
+        if minutes < 60:
+            return 'Short Movie'
+        elif 60 <= minutes <= 120:
+            return 'Standard Movie'
+        else:
+            return 'Long Movie'
+
+    elif 'Season' in row['duration']:
+        # Extract the number before 'Season'
+        seasons = int(row['duration'].split()[0])
+        if seasons == 1:
+            return 'Mini-Series'
+        elif 2 <= seasons <= 4:
+            return 'Standard Series'
+        else:
+            return 'Long-Running Series'
+    else:
+        return 'Unknown'
+
+# Apply the function
+df['content_length_category'] = df.apply(categorize_content_length, axis=1)
+
+# Check results
+df[['title', 'type', 'duration', 'content_length_category']].head(10)
+
+#Original Vs Licensed
+netflix_originals = ['Stranger Things', 'Money Heist', 'Dark', 'The Witcher', 
+                     'Sex Education', 'Squid Game', 'Narcos', 'The Crown', 'Extraction', 'Roma']
+
+def get_original_status(row):
+    title = str(row['title'])
+    description = str(row['description']).lower()
+    year = row['release_year']
+    
+    # Check if explicitly Netflix
+    if 'netflix' in description or title in netflix_originals:
+        return 'Original'
+    
+    # Heuristic rule based on release year
+    if year >= 2017:
+        return 'Original'
+    else:
+        return 'Licensed'
+
+df['original_vs_licensed'] = df.apply(get_original_status, axis=1)
+df['original_vs_licensed'].value_counts()
+#Visualizing 
+# Count of Originals vs Licensed
+plt.figure(figsize=(6,5))
+sns.countplot(x='original_vs_licensed', data=df, palette='Set2')
+plt.title('Netflix Original vs Licensed Content')
+plt.xlabel('Content Type')
+plt.ylabel('Count')
+plt.show()
+
+
+
