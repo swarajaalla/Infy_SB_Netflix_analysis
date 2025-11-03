@@ -89,6 +89,22 @@ New features were created to provide deeper insights for the modeling phase:
     *   **Feature Importance:** The most critical feature for this prediction was **`duration_num`**. The numeric difference between movie runtimes (e.g., 90-150 min) and TV show season counts (e.g., 1-10) was the strongest predictor.
     *   **Confusion Matrix:** The model made only **one incorrect prediction** out of 1,762 test samples, confirming its high precision and recall.
 
+
+## 💡 Phase 6: Advanced Analysis - Content Drivers
+
+A **Logistic Regression** model was used to analyze the coefficients and interpret the factors driving a title to be produced by a **Top 10 Content Country**.
+
+**Hypothesis:** Are top-contributing countries specialized in the most popular genres?
+**Features Analyzed:** `duration`, `rating_code`, `content_age_years`, and `is_top_genre`.
+
+### Logistic Regression Coefficient Analysis
+
+| Feature | Coefficient | Impact Interpretation |
+| :--- | :--- | :--- |
+| **is\_top\_genre** | **-0.6141** | **Strongest Negative Impact.** Being in one of the Top 10 most common genres significantly *decreases* the likelihood of a title coming from a Top Country. |
+| **duration** | **+0.0006** | Marginally positive correlation. |
+| **rating\_code** | **-0.0785** | Small negative correlation. |
+
 ---
 
 ## 💻 Technologies & Libraries Used
